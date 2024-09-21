@@ -1,0 +1,265 @@
+/*
+nome: João Pedro Martins Mascêna 
+Email: Joao.martinsmascena@upe.br
+acabei não fazendo as atualizações no git pois não possuía conta no mesmo
+
+
+*/
+
+
+
+#include <stdio.h>
+#include <string.h>
+
+void base2(int num) {
+    char bin[17];
+    bin[16] = '\0';
+    int i;
+
+    for (i = 0; i < 16; i++) {
+        bin[i] = '0';
+    }
+
+    i = 15;
+
+    if (num == 0) {
+        bin[i] = '0';
+        printf("Número em binário: %s\n", bin);
+        return;
+    } else {
+        printf("Convertendo o número %d para binário:\n", num);
+        while (num > 0) {
+            if (num % 2) {
+                bin[i] = '1';
+                printf("O número %d é ímpar, então bin[%d] = '1'\n", num, i);
+            } else {
+                bin[i] = '0';
+                printf("O número %d é par, então bin[%d] = '0'\n", num, i);
+            }
+            num /= 2;
+            printf("Dividindo por 2, o novo número é %d\n", num);
+            i--;
+        }
+    }
+    printf("Número em binário: %s\n", bin);
+}
+
+void base8(int num) {
+    char oct[12];
+    oct[11] = '\0';
+    int i;
+
+    for (i = 0; i < 11; i++) {
+        oct[i] = '0';
+    }
+
+    i = 10;
+
+    if (num == 0) {
+        oct[i] = '0';
+        printf("Número em octal: %s\n", oct);
+        return;
+    } else {
+        printf("Convertendo o número %d para octal:\n", num);
+        while (num > 0) {
+            oct[i] = (num % 8) + '0'; // Converte para caractere
+            printf("O número %d mod 8 é %d, então oct[%d] = '%c'\n", num, num % 8, i, oct[i]);
+            num /= 8;
+            printf("Dividindo por 8, o novo número é %d\n", num);
+            i--;
+        }
+    }
+
+    printf("Número em octal: %s\n", oct);
+}
+
+void base16(int num) {
+    char hex[9];
+    hex[8] = '\0';
+    int i;
+
+    for (i = 0; i < 8; i++) {
+        hex[i] = '0';
+    }
+
+    i = 7;
+
+    if (num == 0) {
+        hex[i] = '0';
+        printf("Número em hexadecimal: %s\n", hex);
+        return;
+    } else {
+        printf("Convertendo o número %d para hexadecimal:\n", num);
+        while (num > 0) {
+            int fator = num % 16;
+            if (fator < 10) {
+                hex[i] = fator + '0';
+            } else {
+                hex[i] = fator - 10 + 'A';
+            }
+            printf("O resto da divisão de %d por 16 é %d, então hex[%d] = '%c'\n", num, fator, i, hex[i]);
+            num /= 16;
+            printf("Dividindo por 16, o novo número é %d\n", num);
+            i--;
+        }
+    }
+
+    printf("Número em hexadecimal: %s\n", hex);
+}
+
+void baseBCD(int num) {
+    if (num < 0) {
+        printf("Número inválido! Apenas números positivos são aceitos.\n");
+        return;
+    }
+
+    char bcd[40];
+    int i = 0;
+
+    if (num == 0) {
+        printf("Número em BCD: 0000\n");
+        return;
+    } else {
+        printf("Convertendo o número %d para BCD:\n", num);
+    }
+
+    while (num > 0) {
+        int digito = num % 10;
+        printf("convertendo o digito das unidades: %d\n", digito);
+
+        printf("Convertendo o dígito %d para BCD:\n", digito);
+        bcd[i++] = (digito & 8) ? '1' : '0';
+        printf("Bit 3 (8): %s\n", (digito & 8) ? "1" : "0");
+
+        bcd[i++] = (digito & 4) ? '1' : '0';
+        printf("Bit 2 (4): %s\n", (digito & 4) ? "1" : "0");
+
+        bcd[i++] = (digito & 2) ? '1' : '0';
+        printf("Bit 1 (2): %s\n", (digito & 2) ? "1" : "0");
+
+        bcd[i++] = (digito & 1) ? '1' : '0';
+        printf("Bit 0 (1): %s\n", (digito & 1) ? "1" : "0");
+
+        num /= 10;
+        printf("Dividindo o número por 10, o novo número é: %d\n", num);
+    }
+
+    printf("Número em BCD: ");
+    for (int j = i-1; j >= 0; j--) {
+        printf("%c", bcd[j]);
+    }
+    printf("\n");
+}
+
+void printBitsFloat(float f) {
+    unsigned char bytes[4];
+    memcpy(bytes, &f, sizeof(f));
+
+    printf("Analisando o número em Float: %f\n", f);
+    printf("agora em representação binária: ");
+    for (int i = 3; i >= 0; i--) {
+        for (int j = 7; j >= 0; j--) {
+            printf("%d", (bytes[i] >> j) & 1);
+        }
+    }
+    printf("\n");
+
+    int sinal = (bytes[3] >> 7) & 1;
+    printf("Sinal: %d\n", sinal);
+
+    int expoente = ((bytes[3] & 0x7F) << 1) | ((bytes[2] >> 7) & 1);
+    printf("Expoente: %d\n", expoente);
+
+    printf("Expoente com viés: expoente-127=%d\n", expoente - 127);
+
+    int frac = ((bytes[2] & 0x7F) << 16) | (bytes[1] << 8) | bytes[0];
+    printf("Fração: %d\n", frac);
+}
+
+void printBitsDouble(double d) {
+    unsigned char bytes[8];
+    memcpy(bytes, &d, sizeof(d));
+
+    printf("Analisando o número em Double: %f\n", d);
+    printf("agora em representação binária: ");
+    for (int i = 7; i >= 0; i--) {
+        for (int j = 7; j >= 0; j--) {
+            printf("%d", (bytes[i] >> j) & 1);
+        }
+    }
+    printf("\n");
+
+    int sinal = (bytes[7] >> 7) & 1;
+    printf("Sinal: %d\n", sinal);
+
+    int expoente = ((bytes[7] & 0x7F) << 4) | ((bytes[6] >> 4) & 0x0F);
+    printf("Expoente: %d\n", expoente);
+
+    printf("Expoente com viés: expoente - 1023 = %d\n", expoente - 1023);
+
+    int frac = 0;
+    for (int i = 0; i < 6; i++) {
+        frac = (frac << 8) | bytes[5 - i];
+    }
+    frac = (frac << 4) | (bytes[6] & 0x0F);
+    printf("Fração: %d\n", frac);
+}
+
+void converterfltdbl(double num) {
+    float f = (float)num;
+    double d = num;
+
+    printBitsFloat(f);
+    printf("\n");
+    printBitsDouble(d);
+}
+int main() {
+    char op1, op2, op3;
+    int num;
+    double num2;
+
+    while (1) {
+
+        printf("Escolha uma das opções:\n1: conversão de base\n2: conversão para float/double\n3: sair\n");
+        scanf(" %c", &op1);
+
+        if (op1 == '1') {
+            printf("Digite um número de base 10:\n");
+            scanf("%d", &num);
+            printf("Selecione a opção:\n1: base 2\n2: base 8\n3: base 16\n4: BCDE\n");
+            scanf(" %c", &op2);
+
+            if (op2 == '1') {
+                base2(num);
+            }
+            else if(op2=='2') {
+                base8(num);
+            }
+            else if(op2=='3') {
+                base16(num);
+            }
+            else if(op2=='4') {
+                baseBCD(num);
+            }
+            else {
+                printf("Opção inválida\n");
+                continue;
+            }
+
+        }
+        if(op1=='2') {
+            printf("Digite um número decimal:\n");
+            scanf("%lf", &num2);
+            converterfltdbl(num2);
+        }
+        else if (op1 == '3') {
+            break;
+        } else {
+            printf("Opção inválida\n");
+            continue;
+        }
+        continue;
+    }
+
+    return 0;
+}
